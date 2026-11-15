@@ -1,0 +1,20 @@
+{
+  "name": "freshmart-cold-storage",
+  "version": "1.0.0",
+  "description": "FreshMart Cold Storage - freezer shelf leasing API with no double booking",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "seed": "node seed.js",
+    "test:twist": "node twist-test.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}

@@ -1,0 +1,775 @@
+{
+  "info": {
+    "name": "FreshMart Cold Storage API",
+    "description": "Start the server (npm run dev) and run npm run seed before running this collection.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "leaseId",
+      "value": ""
+    },
+    {
+      "key": "newShelfId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Twist - No double booking",
+      "item": [
+        {
+          "name": "Test 1 - Lease Shelf 7 to Asha (201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 201\", () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set(\"leaseId\", pm.response.json().lease_id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vendor_id\": 1,\n  \"shelf_id\": 7\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leases",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leases"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Test 2 - Lease Shelf 7 to Ravi (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 409\", () => pm.response.to.have.status(409));",
+                  "pm.test(\"Message is Shelf 7 is already leased\", () => pm.expect(pm.response.json().message).to.eql(\"Shelf 7 is already leased\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vendor_id\": 2,\n  \"shelf_id\": 7\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leases",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leases"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Test 3a - Return Shelf 7 (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leases/{{leaseId}}/return",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leases",
+                "{{leaseId}}",
+                "return"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Test 3b - Lease Shelf 7 to Ravi (201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 201\", () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vendor_id\": 2,\n  \"shelf_id\": 7\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leases",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leases"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Shelves CRUD",
+      "item": [
+        {
+          "name": "Get all shelves",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/shelves",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shelves"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get one shelf",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/shelves/7",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shelves",
+                "7"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get missing shelf (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/shelves/999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shelves",
+                "999"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add shelf (201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 201\", () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set(\"newShelfId\", pm.response.json().shelf_id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Shelf 11\",\n  \"temperature\": -20\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/shelves",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shelves"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update shelf",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Shelf 11 Ice Cream\",\n  \"temperature\": -22\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/shelves/{{newShelfId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shelves",
+                "{{newShelfId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete shelf",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/shelves/{{newShelfId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shelves",
+                "{{newShelfId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Validation (400)",
+      "item": [
+        {
+          "name": "Add shelf - empty body",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/shelves",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shelves"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add shelf - temperature is text",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Shelf X\",\n  \"temperature\": \"cold\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/shelves",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shelves"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add shelf - temperature too warm",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Shelf X\",\n  \"temperature\": 25\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/shelves",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shelves"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Lease - missing vendor_id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"shelf_id\": 3\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leases",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leases"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Search and sort (query parameters)",
+      "item": [
+        {
+          "name": "Shelves at -18 C",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/shelves?temperature=-18",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shelves"
+              ],
+              "query": [
+                {
+                  "key": "temperature",
+                  "value": "-18"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Shelves by name",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/shelves?name=7",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shelves"
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "7"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Sort by temperature desc",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/shelves?sort=temperature&order=desc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shelves"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "temperature"
+                },
+                {
+                  "key": "order",
+                  "value": "desc"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Sort by colour (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/shelves?sort=colour",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shelves"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "colour"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Join and vendors",
+      "item": [
+        {
+          "name": "All leases (join)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leases",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leases"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Active leases only",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leases?status=active",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leases"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "active"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get all vendors",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vendors",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vendors"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add vendor (201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status is 201\", () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vendor_name\": \"Kiran\",\n  \"phone\": \"9876500004\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/vendors",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vendors"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
